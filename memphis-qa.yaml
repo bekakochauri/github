@@ -1,0 +1,27 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: Helm
+  name: memphis-qa
+  namespace: argocd
+spec:
+  destination:
+    namespace: memphis-cloud
+    server: https://29F87491194576EB84E271D275115AC9.gr7.eu-central-1.eks.amazonaws.com
+  ignoreDifferences:
+  - group: apps
+    jsonPointers:
+    - /spec/replicas
+    kind: Deployment
+  project: default
+  sources:
+  - helm:
+      valueFiles:
+      - $values/kubernetes-values/memphis-cloud/memphis-qa-cloud-eu.yaml
+    path: memphis
+    repoURL: git@github.com:memphisdev/memphis-k8s-cloud.git
+    targetRevision: qa
+  - ref: values
+    repoURL: git@github.com:memphisdev/memphis-devops.git
+    targetRevision: master
